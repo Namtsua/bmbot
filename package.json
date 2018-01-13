@@ -19,6 +19,7 @@
   "dependencies": {
     "discord.js": "^11.2.1",
     "install-peers": "^1.0.2",
-    "riot-lol-api": "^4.2.13"
+    "riot-lol-api": "^4.2.13",
+    "sqlite3": "^3.1.13"
   }
 }
