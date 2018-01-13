@@ -1,4 +1,5 @@
 const Discord = require('discord.js');
+
 const sqlite = require('sqlite3').verbose();
 let db = new sqlite.Database('../db/users.db', (err) => {
 	if(err){
@@ -27,11 +28,16 @@ bot.on('message', message => {
 		console.log("Handling command");
 		var command = message.content.substr(1);
 		var args = command.split(" ");
-		console.log(command);
 
 		switch(args[0].toLowerCase()){
 			case "register":
 				registerUser(message);
+				break;
+			case "unregister":
+				unregisterUser(message);
+				break;
+			case "help":
+				showHelp(message);
 				break;
 			default:
 				break;
@@ -71,7 +77,23 @@ function registerUser(message){
 			});
 		});
 	});
+	message.reply("Registered!");
+
 }
 
+function showHelp(message){
+	message.reply("help message here !!!");
+}
+
+function unregisterUser(message){
+	var user = message.author;
+	db.run(`DELETE FROM users WHERE user_id=?`,user.id, (err) => {
+		if (err) {
+			console.error(err.message);
+		}
+	});
+	message.reply("Unregistered!");
+}
+  
 // log our bot in
 bot.login(token);
