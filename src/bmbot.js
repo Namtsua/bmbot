@@ -9,23 +9,43 @@ let db = new sqlite.Database('../db/users.db', (err) => {
 	console.log('Connected to user database.');
 });
 
-// create an instance of a Discord Client, and call it bot
-const bot = new Discord.Client();
+// User bot stays local to bmbot server
+const user_bot = new Discord.Client();
+// External bot blasts BMs and redirects users to bmbot server
+const extern_bot = new Discord.Client();
 
 var client_secret = require('../client_secret.json');
 
 // the token of your bot - https://discordapp.com/developers/applications/me
-const token = client_secret.discord_token;
+const user_token = client_secret.user_token;
+const bot_token = client_secret.bot_token;
+
+const hub_server_id = client_secret.hub_server;
+const hub_channel_id = client_secret.hub_channel;
+
+var hub_channel_invite;
 
 // from Discord _after_ ready is emitted.
-bot.on('ready', () => {
-    console.log('I am ready!');
+user_bot.on('ready', () => {
+    console.log('User bot ready!');
 });
 
-bot.on('message', message => {
-	// Idk if this is a good way of doing it but yolo
+extern_bot.on('ready', () => {
+	var channels = extern_bot.channels;
+	var channel = channels.find('id', hub_channel_id);
+
+	channel.createInvite({
+		maxAge: 0,
+	}).then((inv) => { 
+		hub_channel_invite = inv.url;
+	});
+
+	console.log('External bot ready!');
+});
+
+user_bot.on('message', message => {
 	if(message.content.startsWith("$")){
-		console.log("Handling command");
+		console.log("USER:Handling command");
 		var command = message.content.substr(1);
 		var args = command.split(" ");
 
@@ -44,6 +64,32 @@ bot.on('message', message => {
 		}
 	}
 });
+
+extern_bot.on('message', message => {
+	if(message.content.startsWith("$")){
+		console.log("BOT:Handling command");
+		var command = message.content.substr(1);
+		var args = command.split(" ");
+
+		switch(args[0].toLowerCase()){
+			case "register":
+				redirectUser(message);
+				break;
+			case "unregister":
+				unregisterUser(message);
+				break;
+			case "help":
+				showHelp(message);
+				break;
+			default:
+				break;
+		}
+	}
+});
+
+function redirectUser(message){
+	message.reply("please go here to register, " + hub_channel_invite);
+}
 
 function registerUser(message){
 	var user = message.author;
@@ -96,4 +142,5 @@ function unregisterUser(message){
 }
   
 // log our bot in
-bot.login(token);
+user_bot.login(user_token);
+extern_bot.login(bot_token);
