@@ -10,11 +10,17 @@ sqlite3 ./db/users.db <<EOS
 	username text NOT NULL,
 	discriminator integer
 	);
+
 	CREATE TABLE connections (
 	type text NOT NULL,
 	name text NOT NULL,
+	id text NOT NULL,
 	user_id integer NOT NULL,
-	FOREIGN KEY(user_id) REFERENCES users(user_id)
+	
+	CONSTRAINT fk_users
+		FOREIGN KEY(user_id) 
+		REFERENCES users(user_id)
+		ON DELETE CASCADE
 	);
 
 EOS
