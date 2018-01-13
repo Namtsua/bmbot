@@ -2,6 +2,8 @@
 
 mkdir -p db
 
+rm -f ./db/users.db
+
 sqlite3 ./db/users.db <<EOS
 	CREATE TABLE users (
 	user_id integer PRIMARY KEY,
