@@ -2,6 +2,7 @@ const Discord = require('discord.js');
 const client_secret = require('../client_secret.json');
 const summoner = require('./summoner.js');
 const twitter = require('./twitter.js');
+const reddit = require('./redditbm.js');
 
 const config = require('./config');
 const sqlite = require('sqlite3').verbose();
@@ -125,8 +126,8 @@ function twitterBM(id, msg){
 	twitter.tweetUserById(id,msg);
 }
 
-function redditBM(id, msg){
-	console.log("unimplemented");
+function redditBM(user, msg){
+	reddit.redditBM(user, msg);
 }
 
 
@@ -153,7 +154,7 @@ function bmUser(id,type,msg){
 						twitterBM(row.id,msg);
 						break;
 					case "reddit":
-						redditBM(row.id,msg);
+						redditBM(row.name,msg);
 						break;
 					default:
 						break;

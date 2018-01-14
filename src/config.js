@@ -3,11 +3,11 @@ var config = {};
 config.reddit = {};
 config.discord = {};
 
-config.reddit.userAgent = 'discord:vg-bm-bot:v0.0.0 (by /u/ur-bad-lmao)';
-config.reddit.clientId = 'rFUIdwSapW3qMQ';
-config.reddit.clientSecret = '2_ZmGAoEhTbDLXVxo5AKeQ8X5wY';
-config.reddit.username = 'ur-bad-lmao';
-config.reddit.password = 'chingchongfucker';
+config.reddit.userAgent = '';
+config.reddit.clientId = '';
+config.reddit.clientSecret = '';
+config.reddit.username = '';
+config.reddit.password = '';
 
 config.discord.help =
 "help message here !!!";
