@@ -198,6 +198,7 @@ function bmUser(id,type,msg){
 }
 
 async function getLeagueUsers(){
+	console.log("getting league users");
 	var users = [];
     //Grab discord users' Riot usernames
     let query = `SELECT * FROM connections WHERE type='leagueoflegends'`;
@@ -205,7 +206,11 @@ async function getLeagueUsers(){
         if (err) {
             return console.error(err.message);
 		}
+
+		console.log("pulled from connections");
+
 		rows.forEach(async function (row){
+			console.log("iterating through table");
 			var summoner_id = row.id;
 			var user_id = row.user_id;
 			var inGameCurrent = await summoner.isUserInGame(summoner_id.split('_')[1]); 
@@ -215,6 +220,8 @@ async function getLeagueUsers(){
 				if (err) {
 					return console.error(err.message);
 				}
+
+				console.log("Getting data from user");
 				var wasInGame = row.ingame;
 				var isBM = row.isBM;
 
@@ -228,6 +235,7 @@ async function getLeagueUsers(){
 
 				let query = `UPDATE users SET ingame=? WHERE user_id=?`
 				db.run(query,[inGameCurrent, user_id], (err) => {
+					console.log("updating data for user");
 					if (err) {
 						return console.error(err.message);
 					}
@@ -236,6 +244,8 @@ async function getLeagueUsers(){
 		});
 
 	});
+
+	console.log(users);
 	
 	return users;
 }
@@ -303,7 +313,7 @@ extern_bot.login(bot_token);
 // Timed calls
 var timerID = setInterval(async function() {
 	var users = await getLeagueUsers();
-	console.log(users);
+	//console.log(users);
 	var j = 0;
 	for (var i = 0; i < users.length; i++){
 		summoner.gatherInformation(users[i])
