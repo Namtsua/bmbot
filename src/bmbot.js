@@ -199,54 +199,59 @@ function bmUser(id,type,msg){
 
 async function getLeagueUsers(){
 	console.log("getting league users");
-	var users = [];
-    //Grab discord users' Riot usernames
-    let query = `SELECT * FROM connections WHERE type='leagueoflegends'`;
-    db.all(query, (err, rows) => {
-        if (err) {
-            return console.error(err.message);
-		}
 
-		console.log("pulled from connections");
+	async function lmao(){
+		var users = [];
+		//Grab discord users' Riot usernames
+		let query = `SELECT * FROM connections WHERE type='leagueoflegends'`;
+		db.all(query, (err, rows) => {
+			if (err) {
+				return console.error(err.message);
+			}
 
-		rows.forEach(async function (row){
-			console.log("iterating through table");
-			var summoner_id = row.id;
-			var user_id = row.user_id;
-			var inGameCurrent = await summoner.isUserInGame(summoner_id.split('_')[1]); 
-			let query = `SELECT * FROM users WHERE user_id=?`;
+			console.log("pulled from connections");
 
-			db.get(query,[user_id], (err, row) => {
-				if (err) {
-					return console.error(err.message);
-				}
+			rows.forEach(async function (row){
+				console.log("iterating through table");
+				var summoner_id = row.id;
+				var user_id = row.user_id;
+				var inGameCurrent = await summoner.isUserInGame(summoner_id.split('_')[1]); 
+				let query = `SELECT * FROM users WHERE user_id=?`;
 
-				console.log("Getting data from user");
-				var wasInGame = row.ingame;
-				var isBM = row.isBM;
-
-				if (wasInGame && !inGameCurrent){
-					// Previously in game, but no longer in game
-					users.push({
-						"summoner_id": summoner_id,
-						"isBM": isBM
-					});
-				}
-
-				let query = `UPDATE users SET ingame=? WHERE user_id=?`
-				db.run(query,[inGameCurrent, user_id], (err) => {
-					console.log("updating data for user");
+				db.get(query,[user_id], (err, row) => {
 					if (err) {
 						return console.error(err.message);
 					}
+
+					console.log("Getting data from user");
+					var wasInGame = row.ingame;
+					var isBM = row.isBM;
+
+					if (wasInGame && !inGameCurrent){
+						// Previously in game, but no longer in game
+						users.push({
+							"summoner_id": summoner_id,
+							"isBM": isBM
+						});
+					}
+
+					let query = `UPDATE users SET ingame=? WHERE user_id=?`
+					db.run(query,[inGameCurrent, user_id], (err) => {
+						console.log("updating data for user");
+						if (err) {
+							return console.error(err.message);
+						}
+					});
 				});
 			});
+			return users;
 		});
+	}
 
-	});
+	var users = await lmao();
 
 	console.log(users);
-	
+
 	return users;
 }
 
