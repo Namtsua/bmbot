@@ -87,7 +87,7 @@ async function gatherInformation() {
     }catch(error) {
         console.log("qqqqqqq");
     }
-    console.log(JSON.stringify(userInfo));
+    return userInfo;
 }
 
 module.exports.gatherInformation = gatherInformation;
