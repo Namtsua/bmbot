@@ -3,6 +3,8 @@
 
 var client_secret = require('../client_secret.json');
 const Discord = require('discord.js');
+var config = require('./config');
+
 
 // create an instance of a Discord Client, and call it bot
 const bot = new Discord.Client();
@@ -15,6 +17,11 @@ bot.on('ready', () => {
     console.log('I am ready!');
 });
 
-
+bot.on('message', message => {
+    if (message.content === '$help') {
+      message.reply("help message here !!!");
+    }
+  });
+  
 // log our bot in
 bot.login(token);
