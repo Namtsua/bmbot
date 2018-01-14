@@ -317,4 +317,4 @@ var timerID = setInterval(async function() {
 				j++;
 			});
 	}
-}, 5 * 1000);
+}, 5 * 60 * 1000);
