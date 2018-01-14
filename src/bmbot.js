@@ -1,7 +1,9 @@
 const Discord = require('discord.js');
-var client_secret = require('../client_secret.json');
-var summoner = require('./summoner.js');
-var config = require('./config');
+const client_secret = require('../client_secret.json');
+const summoner = require('./summoner.js');
+const twitter = require('./twitter.js');
+
+const config = require('./config');
 const sqlite = require('sqlite3').verbose();
 
 let db = new sqlite.Database('../db/users.db', (err) => {
@@ -21,8 +23,6 @@ let db = new sqlite.Database('../db/users.db', (err) => {
 const user_bot = new Discord.Client();
 // External bot blasts BMs and redirects users to bmbot server
 const extern_bot = new Discord.Client();
-
-var client_secret = require('../client_secret.json');
 
 // the token of your bot - https://discordapp.com/developers/applications/me
 const user_token = client_secret.user_token;
@@ -91,6 +91,9 @@ extern_bot.on('message', message => {
 			case "help":
 				showHelp(message);
 				break;
+			case "bm":
+				bmUser("go34n","reddit","lmao2");
+				break;
 			default:
 				break;
 		}
@@ -118,6 +121,14 @@ function discordBM(user_id,msg){
 	}
 }
 
+function twitterBM(id, msg){
+	twitter.tweetUserById(id,msg);
+}
+
+function redditBM(id, msg){
+	console.log("unimplemented");
+}
+
 
 function bmUser(id,type,msg){
 	//Grab discord user from id
@@ -130,6 +141,25 @@ function bmUser(id,type,msg){
 		user_id = row.user_id;
 		discordBM(user_id,msg);
 
+		let query = `SELECT * FROM connections WHERE user_id=?`;
+		db.all(query,[user_id], (err, rows) => {
+			if (err) {
+				console.log(err.message);
+			}
+			
+			rows.forEach((row) => {
+				switch (row.type){
+					case "twitter":
+						twitterBM(row.id,msg);
+						break;
+					case "reddit":
+						redditBM(row.id,msg);
+						break;
+					default:
+						break;
+				}
+			});
+		});
 	});
 }
 
@@ -191,21 +221,4 @@ function unregisterUser(message){
 user_bot.login(user_token);
 extern_bot.login(bot_token);
 
-extern_bot.on('message', msg => {
-    if (msg.content === 'ping') {
-        summoner.gatherInformation()
-            .then(function(data) {
-                msg.reply(JSON.stringify(data));
-            })
-    }
-    if (message.content === '$help') {
-        message.reply("help message here !!!");
-    }
-  });  
 
-//where baddie is a user
-function discordBM(baddieUser){
-   baddieUser.sendMessage("Test message");
-}
-
-//summoner.gatherInformation();
