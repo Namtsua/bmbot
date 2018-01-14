@@ -2,8 +2,7 @@
     "gold_bm" : [
         "Really took your time deciding on your first item, huh?",
         "Stop being a Scrooge McDuck and spend your gold.",
-        "Are you a kid in a candy store or something? Just pick your first item already. Oh wait, you can’t afford any.",
-       "I bet you wished you were Amumu so that your tears could deal damage."
+        "Are you a kid in a candy store or something? Just pick your first item already. Oh wait, you can’t afford any."
     ],
     "gold_gm" : [
         "You still had a lot of unspent gold. Invest for the future!",
@@ -46,6 +45,7 @@
         "On a scale of 1 easy to 10 easy, that was 2 easy.",
         "Send me your Paypal. I’ll pay you to delete your account.",
         "Get dunked.",
+        "I bet you wished you were Amumu so that your tears could deal damage.",
         "*flashes mastery*"
     ],
     "loss_gm" : [

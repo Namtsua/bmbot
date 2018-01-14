@@ -83,7 +83,7 @@ extern_bot.on('message', message => {
 		var command = message.content.substr(1);
 		var args = command.split(" ");
 
-		switch(args[0].toLowerCase()){
+    switch(args[0].toLowerCase()){
 			case "register":
 				redirectUser(message);
 				break;
@@ -252,17 +252,14 @@ user_bot.login(user_token);
 extern_bot.login(bot_token);
 
 
-
-//summoner.gatherInformation();
-
-//  // Timed calls
-//  var timerID = setInterval(function() {
-//     var users = getLeagueUsers();
-//     for (var i = 0; i < users.length; i++){
-//         summoner.gatherInformation(users[i])
-//             .then(function(data) {
-//                 // do something with the data
-//                 console.log("test");
-//             })
-//     }
-//  }, 60 * 1000);
+// Timed calls
+var timerID = setInterval(function() {
+	var users = getLeagueUsers();
+	for (var i = 0; i < users.length; i++){
+		summoner.gatherInformation(users[i])
+			.then(function(data) {
+				// do something with the data
+				console.log("test");
+			})
+	}
+}, 60 * 1000);
