@@ -70,3 +70,24 @@ async function parseGameStats(gameStats, accountId){
     return desiredUser;
     
 }
+
+
+
+async function gatherInformation() {
+    
+    const summonerInfo = await getSummonerID("Namtsua")
+    const matchList = await getMatchHistory(summonerInfo.accountId)
+    const mostRecentMatch = matchList.matches[0];
+    const matchInfo = await getMatchStats(mostRecentMatch.gameId)
+    const userInfo = await parseGameStats(matchInfo, summonerInfo.accountId);
+    //const message = await analyze(userInfo);
+    try{
+            const asdf  = await getUserGameStatus(ctz.id)
+
+    }catch(error) {
+        console.log("qqqqqqq");
+    }
+    console.log(JSON.stringify(userInfo));
+}
+
+module.exports.gatherInformation = gatherInformation;
