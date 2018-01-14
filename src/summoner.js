@@ -55,10 +55,34 @@ async function parseGameStats(gameStats, accountId){
             break;
         }
     }
+    var minWards = 100;
+    var minKDA = 100;
+    var maxDeaths = 0;
+    var minCS = 1000;
+
+    if (desiredUser.desiredUserId < 4){
+        
+        for (var i = 0; i < 4; i++){
+            var tmpStatsLocation = gameStats.participants[i].stats;
+            minWards = Math.min(minWards, tmpStatsLocation.wardsKilled);
+            maxDeaths = Math.max(maxDeaths, tmpStatsLocation.wardsKilled);
+            minKDA = Math.min(minKDA,(tmpStatsLocation.kills + tmpStatsLocation.assists) / tmpStatsLocation.deaths);
+            minCS = Math.min(minCS, tmpStatsLocation.totalMinionsKilled);
+        }
+    }
+    else {
+        for (var i = 4; i < 8; i++){
+            var tmpStatsLocation = gameStats.participants[i].stats;
+            minWards = Math.min(minWards, tmpStatsLocation.wardsKilled);
+            maxDeaths = Math.max(maxDeaths, tmpStatsLocation.deaths);
+            minKDA = Math.min(minKDA,(tmpStatsLocation.kills + tmpStatsLocation.assists) / tmpStatsLocation.deaths);
+            minCS = Math.min(minCS, tmpStatsLocation.totalMinionsKilled);
+        }
+    }
     var statsLocation = gameStats.participants[desiredUser.desiredUserIndex].stats
     desiredUser.win = statsLocation.win;
     desiredUser.kills = statsLocation.kills;
-    desiredUser.assists = statsLocation.assist;
+    desiredUser.assists = statsLocation.assists;
     desiredUser.deaths = statsLocation.deaths;
     desiredUser.wardsKilled = statsLocation.wardsKilled;
     desiredUser.visionScore = statsLocation.visionScore;
@@ -66,6 +90,11 @@ async function parseGameStats(gameStats, accountId){
     desiredUser.goldSpent = statsLocation.goldSpent;
     desiredUser.largestKillingSpree = statsLocation.largestKillingSpree;
     desiredUser.largestCriticalStrike = desiredUser.largestCriticalStrike;
+    desiredUser.kda = (desiredUser.kills + desiredUser.assists) / desiredUser.deaths;
+    desiredUser.worstKDA = statsLocation.wardsKilled <= minKDA;
+    desiredUser.mostDeaths = desiredUser.deaths >= maxDeaths;
+    desiredUser.worstCS = statsLocation.totalMinionsKilled <= minCS;
+    
 
     // Special condition for support/carry
     return desiredUser;
@@ -74,7 +103,7 @@ async function parseGameStats(gameStats, accountId){
 
 async function decideBM(userInfo){
     if (!userInfo.win) {
-        var winMessages = messages.loss;
+        var winMessages = messages._bm;
         var randomIndex = Math.floor(Math.random() * Math.floor(winMessages.length));
         var finalBMs = [winMessages[randomIndex % winMessages.length], 
                         winMessages[(randomIndex + 1) % winMessages.length], 
