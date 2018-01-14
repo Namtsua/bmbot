@@ -105,6 +105,7 @@ async function parseGameStats(gameStats, accountId){
 
 async function decideBM(userInfo,bm){
     var potentialReasons = [userInfo.win, userInfo.worstKDA, userInfo.leastGold, userInfo.worstCS];
+	if(userInfo.win == userInfo.worstKDA == userInfo.leastGold == userInfo.worstCS == false) return ['Way to go!', 'Good Job!','Keep it up!'];
     randomReason = Math.floor(Math.random() * Math.floor(4));
     while (!potentialReasons[randomReason]){
         randomReason++;
