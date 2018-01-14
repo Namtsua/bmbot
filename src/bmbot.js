@@ -1,6 +1,9 @@
 const Discord = require('discord.js');
-
+var client_secret = require('../client_secret.json');
+var summoner = require('./summoner.js');
+var config = require('./config');
 const sqlite = require('sqlite3').verbose();
+
 let db = new sqlite.Database('../db/users.db', (err) => {
 	if(err){
 		console.error(err.message);
@@ -11,7 +14,6 @@ let db = new sqlite.Database('../db/users.db', (err) => {
 			console.error(err.message);
 		}
 	});
-
 	console.log('Connected to user database.');
 });
 
@@ -188,3 +190,22 @@ function unregisterUser(message){
 // log our bot in
 user_bot.login(user_token);
 extern_bot.login(bot_token);
+
+extern_bot.on('message', msg => {
+    if (msg.content === 'ping') {
+        summoner.gatherInformation()
+            .then(function(data) {
+                msg.reply(JSON.stringify(data));
+            })
+    }
+    if (message.content === '$help') {
+        message.reply("help message here !!!");
+    }
+  });  
+
+//where baddie is a user
+function discordBM(baddieUser){
+   baddieUser.sendMessage("Test message");
+}
+
+//summoner.gatherInformation();
