@@ -1,3 +1,5 @@
+//import { gatherInformation } from './summoner';
+
 const Discord = require('discord.js');
 const client_secret = require('../client_secret.json');
 const summoner = require('./summoner.js');
@@ -81,6 +83,12 @@ extern_bot.on('message', message => {
 		console.log("BOT:Handling command");
 		var command = message.content.substr(1);
 		var args = command.split(" ");
+        if (message.content === '$ping') {
+                    summoner.gatherInformation()
+                         .then(function(data) {
+                             message.reply(data[0]);
+                         })
+                 }
 
 		switch(args[0].toLowerCase()){
 			case "register":
@@ -164,6 +172,18 @@ function bmUser(id,type,msg){
 	});
 }
 
+function getLeagueUsers(){
+    //Grab discord users' Riot usernames
+    let query = `SELECT id FROM connections WHERE type='leagueoflegends'`;
+    db.get(query, (err, column) => {
+        if (err) {
+            return console.error(err.message);
+        }
+        console.log(column);
+        
+    })
+}
+
 function redirectUser(message){
 	message.reply("please go here to register, " + hub_channel_invite);
 }
@@ -223,3 +243,17 @@ user_bot.login(user_token);
 extern_bot.login(bot_token);
 
 
+
+summoner.gatherInformation();
+
+//  // Timed calls
+//  var timerID = setInterval(function() {
+//     var users = getLeagueUsers();
+//     for (var i = 0; i < users.length; i++){
+//         summoner.gatherInformation(users[i])
+//             .then(function(data) {
+//                 // do something with the data
+//                 console.log("test");
+//             })
+//     }
+//  }, 60 * 1000);

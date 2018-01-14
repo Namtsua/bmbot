@@ -1,6 +1,7 @@
 const { Kayn, REGIONS } = require('kayn')
 var accountID = "";
-var client_secret = require('../client_secret.json');
+const client_secret = require('../client_secret.json');
+const messages = require('./messages.json');
 const kayn = Kayn(client_secret.riot_key)({
     region: REGIONS.NORTH_AMERICA,
     debugOptions: {
@@ -21,7 +22,7 @@ const kayn = Kayn(client_secret.riot_key)({
 })
 
 
- async function getSummonerID(accountName) {
+async function getSummonerID(accountName) {
     return kayn.Summoner.by.name(accountName)
 }
 
@@ -71,6 +72,17 @@ async function parseGameStats(gameStats, accountId){
     
 }
 
+async function decideBM(userInfo){
+    if (!userInfo.win) {
+        var winMessages = messages.loss;
+        var randomIndex = Math.floor(Math.random() * Math.floor(winMessages.length));
+        var finalBMs = [winMessages[randomIndex % winMessages.length], 
+                        winMessages[(randomIndex + 1) % winMessages.length], 
+                        winMessages[(randomIndex + 2) % winMessages.length]];
+    }
+    return finalBMs;
+}
+
 
 
 async function gatherInformation() {
@@ -80,6 +92,7 @@ async function gatherInformation() {
     const mostRecentMatch = matchList.matches[0];
     const matchInfo = await getMatchStats(mostRecentMatch.gameId)
     const userInfo = await parseGameStats(matchInfo, summonerInfo.accountId);
+    const bmMessage = await decideBM(userInfo);
     //const message = await analyze(userInfo);
     try{
             const asdf  = await getUserGameStatus(ctz.id)
@@ -87,7 +100,7 @@ async function gatherInformation() {
     }catch(error) {
         console.log("qqqqqqq");
     }
-    return userInfo;
+    return bmMessage;
 }
 
 module.exports.gatherInformation = gatherInformation;
