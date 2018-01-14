@@ -6,6 +6,12 @@ let db = new sqlite.Database('../db/users.db', (err) => {
 		console.error(err.message);
 	}
 
+	db.run("PRAGMA foreign_keys = ON",[], (err) => {
+		if (err) {
+			console.error(err.message);
+		}
+	});
+
 	console.log('Connected to user database.');
 });
 
@@ -81,11 +87,34 @@ extern_bot.on('message', message => {
 			case "help":
 				showHelp(message);
 				break;
+			case "bm":
+				bmUser("go34n","reddit","lmao");
+				break;
 			default:
 				break;
 		}
 	}
 });
+
+function discordBM(user_id,msg){
+
+}
+
+
+function bmUser(id,type,msg){
+	//Grab discord user from id
+	let query = `SELECT user_id user_id FROM connections WHERE id=? AND type=?`;
+	db.get(query,[id,type], (err, row) => {
+		if (err) {
+			return console.error(err.message);
+		}
+
+		console.log("BM'ing " + row.user_id);
+
+	});
+
+}
+
 
 function redirectUser(message){
 	message.reply("please go here to register, " + hub_channel_invite);
