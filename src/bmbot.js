@@ -6,7 +6,6 @@ const summoner = require('./summoner.js');
 const twitter = require('./twitter.js');
 const reddit = require('./redditbm.js');
 
-const config = require('./config');
 const sqlite = require('sqlite3').verbose();
 
 let db = new sqlite.Database('../db/users.db', (err) => {
@@ -103,6 +102,9 @@ extern_bot.on('message', message => {
 			case "bm":
 				bmUser("go34n","reddit","lmao2");
 				break;
+			case "league":
+				getLeagueUsers();
+				break;
 			default:
 				break;
 		}
@@ -175,13 +177,13 @@ function bmUser(id,type,msg){
 function getLeagueUsers(){
     //Grab discord users' Riot usernames
     let query = `SELECT id FROM connections WHERE type='leagueoflegends'`;
-    db.get(query, (err, column) => {
+    db.get(query, (err, row) => {
         if (err) {
             return console.error(err.message);
         }
-        console.log(column);
+        console.log(row);
         
-    })
+    });
 }
 
 function redirectUser(message){
