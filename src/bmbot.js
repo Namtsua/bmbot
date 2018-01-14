@@ -2,6 +2,7 @@
 // import the discord.js module
 
 var client_secret = require('../client_secret.json');
+
 const Discord = require('discord.js');
 
 // create an instance of a Discord Client, and call it bot
