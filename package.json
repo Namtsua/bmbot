@@ -17,6 +17,8 @@
   },
   "homepage": "https://github.com/Namtsua/bmbot#readme",
   "dependencies": {
-    "discord.js": "^11.2.1"
+    "discord.js": "^11.2.1",
+    "twit": "^2.2.9",
+    "twitter": "^1.7.1"
   }
 }
