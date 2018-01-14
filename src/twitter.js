@@ -1,25 +1,36 @@
-var client_secret = require('../client_secret.json');
+const client_secret = require('../client_secret.json');
 
-var Twitter = require('twitter');
+const Twitter = require('twitter');
 
-var client = new Twitter({
-    consumer_key: client_secret.consumer_key_api,
-    consumer_secret: client_secret.consumer_secret_api,
-    access_token_key: client_secret.access_token_key_api,
-    access_token_secret: client_secret.access_token_secret_api
+var consumer_key = client_secret.consumer_key_api;
+var consumer_secret = client_secret.consumer_secret_api;
+var access_token_key = client_secret.access_token_key_api;
+var access_token_secret = client_secret.access_token_secret_api;
+
+const client = new Twitter({
+    consumer_key: consumer_key,
+    consumer_secret: consumer_secret,
+    access_token_key: access_token_key,
+    access_token_secret: access_token_secret
 });
 
-var stream = client.stream('user');
+//var stream = client.stream('user');
 
-stream.on('follow', follow_back);
-stream.on('unfollow', unfollow);
+//stream.on('follow', follow_back);
+//stream.on('unfollow', unfollow);
 
-function tweet(screen_name, the_tweet){
-    client.post('statuses/update', {status: "@" + screen_name + " " + the_tweet}, function(error, tweet, response) {
-        if (!error) {
-          console.log(tweet);
-        }
-      });
+function tweetUserById(id, the_tweet){
+	client.get('users/lookup', {user_id: id}, function(error, users, response){
+		if(error){
+			console.log(error.message);
+		}
+		screen_name = users[0].screen_name;
+		client.post('statuses/update', {status: "@" + screen_name + " " + the_tweet}, function(error, tweet, response) {
+			if(error){
+				console.log(error.message);
+			}
+		});
+	});
 }
 
 function direct_message(screen_name_input, message_input){
@@ -53,3 +64,5 @@ function unfollow(screen_name) {
         }
     });
 }
+
+module.exports.tweetUserById = tweetUserById;
