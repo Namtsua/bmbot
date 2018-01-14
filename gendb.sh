@@ -6,7 +6,7 @@ rm -f ./db/users.db
 
 sqlite3 ./db/users.db <<EOS
 	CREATE TABLE users (
-	user_id integer PRIMARY KEY,
+	user_id text PRIMARY KEY,
 	username text NOT NULL,
 	discriminator integer
 	);
@@ -15,7 +15,7 @@ sqlite3 ./db/users.db <<EOS
 	type text NOT NULL,
 	name text NOT NULL,
 	id text NOT NULL,
-	user_id integer NOT NULL,
+	user_id text NOT NULL,
 	
 	CONSTRAINT fk_users
 		FOREIGN KEY(user_id) 
