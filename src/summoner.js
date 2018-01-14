@@ -40,13 +40,28 @@ function getMatchHistory(accountId) {
         })
 }
 
+function getUserGameStatus(summonerId){
+    kayn.CurrentGame.by.summonerID(summonerId)
+    .callback(function(err, currentGame) {
+        if (currentGame) {
+            console.log("User is in match");
+        } 
+        else {
+            console.log("User is not in match");
+        }
+    })
+}
 
-kayn.Matchlist.by.accountID(3440481)
-    .region(REGIONS.NORTH_AMERICA)
-    .query({
-        champion: 67,
-        season: 9,
-    })
-    .callback(function(err, matchlist) {
-        console.log(matchlist.matches)
-    })
+getUserGameStatus();
+//getSummonerID("Namtsua");
+
+// kayn.Matchlist.by.accountID("202381637")
+//     .region(REGIONS.NORTH_AMERICA)
+//     .query({
+//         season: 9,
+
+//     })
+//     .callback(function(err, matchlist) {
+//         console.log(matchlist.matches)
+//     })
+    
