@@ -177,13 +177,17 @@ function bmUser(id,type,msg){
 function getLeagueUsers(){
     //Grab discord users' Riot usernames
     let query = `SELECT id FROM connections WHERE type='leagueoflegends'`;
-    db.get(query, (err, row) => {
+    db.all(query, (err, rows) => {
         if (err) {
             return console.error(err.message);
-        }
-        console.log(row);
-        
-    });
+		}
+		var users = [];
+		rows.forEach((row) => {
+			users.push(row.split('_')[1]);
+		});
+		
+		return users;
+    })
 }
 
 function redirectUser(message){
