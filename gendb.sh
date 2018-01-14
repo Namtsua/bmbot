@@ -8,7 +8,9 @@ sqlite3 ./db/users.db <<EOS
 	CREATE TABLE users (
 	user_id text PRIMARY KEY,
 	username text NOT NULL,
-	discriminator integer
+	discriminator integer,
+	ingame integer NOT NULL,
+	isBM integer NOT NULL
 	);
 
 	CREATE TABLE connections (
