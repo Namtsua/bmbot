@@ -21,7 +21,15 @@ bot.on('message', message => {
     if (message.content === '$help') {
       message.reply("help message here !!!");
     }
+
   });
+
+  //where baddie is a user
+function discordBM(baddieUser){
+   baddieUser.sendMessage("Test message");
+}
+ 
+
   
 // log our bot in
 bot.login(token);
