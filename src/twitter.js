@@ -53,24 +53,3 @@ function unfollow(screen_name) {
         }
     });
 }
-
-// tweet("TryHardChimp", "should stop playing with his fidget spinner and get to work.")
-
-// unfollow("TryHardChimp");
-
-//direct_message("TryHardChimp", "Sup ya weeb.");
-
-//follow("TryHardChimp");
-
-//direct_message("Namtsua", "Git gud you shit.");
-
-//tweet("@TryHardChimp", "should work out.");
-
-// tweet("My creator doesn't know how to use me yet.");
-
-/*
-console.log(client_secret.consumer_key_api);
-console.log(client_secret.consumer_secret_api);
-console.log(client_secret.access_token_key_api);
-console.log(client_secret.access_token_secret_api);
-*/
