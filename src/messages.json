@@ -1,11 +1,16 @@
 {
-    "gold" : [
+    "gold_bm" : [
         "Really took your time deciding on your first item, huh?",
         "Stop being a Scrooge McDuck and spend your gold.",
         "Are you a kid in a candy store or something? Just pick your first item already. Oh wait, you can’t afford any.",
        "I bet you wished you were Amumu so that your tears could deal damage."
     ],
-    "kda" : [
+    "gold_gm" : [
+        "You still had a lot of unspent gold. Invest for the future!",
+        "You didn’t get much gold this game. Remember to farm up next time!",
+        "The other team had a pretty big gold advantage over you. That’s okay though, just invest in some Bitcoin and soon you’ll be richer than all of them."
+    ],
+    "kda_bm" : [
         "The limit of your KDA as time approaches infinity is 0.",
         "You had as much impact in lane as the Scuttle Crab.",
         "You belong in a museum!",
@@ -13,12 +18,23 @@
         "Are you chilling out in your garbage can right now? Cause you're trash.",
         "You have the map awareness of Christopher Columbus."
     ],
-    "cs" : [
+    "kda_gm" : [
+        "Your crits didn’t do much damage. Build lethality?",
+        "KDA a bit low? Take a break, knock off the A, and stock up on some KD.",
+        "KDA... KD… K. It’s whatever. Just shake it off, shake it off!",
+        "Try to position yourself better next time so you can avoid those nasty situations and boost up that KDA!"
+    ],
+    "cs_bm" : [
         "The amount of minions you missed could’ve populated a whole country",
         "I bet you're the NA in Nasus.",
         "I will trade you three siege minions for our Nasus."
     ],
-    "loss" : [
+    "cs_gm" : [
+        "You’re CS this game was a bit low. Remember, the one who hits last also laughs last.",
+        "KDA a bit low? Take a break, knock off the A, and stock up on some KD."
+
+    ],
+    "loss_bm" : [
         "Your team was so bad that you guys couldn't even win a surrender vote.",
         "Gg ez.",
         "Git gud.",
@@ -29,5 +45,9 @@
         "Send me your Paypal. I’ll pay you to delete your account.",
         "Get dunked.",
         "*flashes mastery*"
+    ],
+    "loss_gm" : [
+        "You didn’t have much vision this game, invest in some wards so you can dodge those ganks!",
+        "You win some, you lose some eh champ? Onto the next!"
     ]
 }
