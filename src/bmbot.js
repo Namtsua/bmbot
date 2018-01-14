@@ -197,10 +197,7 @@ function bmUser(id,type,msg){
 	});
 }
 
-async function getLeagueUsers(){
-	console.log("getting league users");
-
-	async function lmao(){
+async function lmao(){
 		var users = [];
 		//Grab discord users' Riot usernames
 		let query = `SELECT * FROM connections WHERE type='leagueoflegends'`;
@@ -244,11 +241,18 @@ async function getLeagueUsers(){
 					});
 				});
 			});
-			return users;
 		});
+			return users;
 	}
 
-	var users = await lmao();
+async function getLeagueUsers(){
+	console.log("getting league users");
+
+	var users = [];
+
+	//users.push(lmao());
+
+	users.push({"summoner_id": "na_39600728", "isBM": 1});
 
 	console.log(users);
 
@@ -334,4 +338,4 @@ var timerID = setInterval(async function() {
 				j++;
 			});
 	}
-}, 5 * 60 * 1000);
+}, 5  * 1000);
