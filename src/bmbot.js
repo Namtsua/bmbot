@@ -111,8 +111,9 @@ function setBM(message){
 	let query = `UPDATE users SET isBM=1 WHERE user_id=?`;
 	db.run(query,[user.id],(err) => {
 		if(err){
-			console.log(err.message);
+			return console.log(err.message);
 		}
+		message.reply("Gonna BM you now!");
 	});
 }
 
@@ -122,8 +123,9 @@ function setGM(message){
 	let query = `UPDATE users SET isBM=0 WHERE user_id=?`;
 	db.run(query,[user.id],(err) => {
 		if(err){
-			console.log(err.message);
+			return console.log(err.message);
 		}
+		message.reply("Gonna GM you now!");
 	});
 }
 
