@@ -197,67 +197,154 @@ function bmUser(id,type,msg){
 	});
 }
 
-async function lmao(){
-		var users = [];
-		//Grab discord users' Riot usernames
-		let query = `SELECT * FROM connections WHERE type='leagueoflegends'`;
-		db.all(query, (err, rows) => {
-			if (err) {
-				return console.error(err.message);
-			}
+//async function lmao(){
+//		var users = [];
+//		//Grab discord users' Riot usernames
+//		let query = `SELECT * FROM connections WHERE type='leagueoflegends'`;
+//		db.all(query, (err, rows) => {
+//			if (err) {
+//				return console.error(err.message);
+//			}
+//
+//			console.log("pulled from connections");
+//
+//			rows.forEach(async function (row){
+//				console.log("iterating through table");
+//				var summoner_id = row.id;
+//				var user_id = row.user_id;
+//				var inGameCurrent = await summoner.isUserInGame(summoner_id.split('_')[1]); 
+//				let query = `SELECT * FROM users WHERE user_id=?`;
+//
+//				db.get(query,[user_id], (err, row) => {
+//					if (err) {
+//						return console.error(err.message);
+//					}
+//
+//					console.log("Getting data from user");
+//					var wasInGame = row.ingame;
+//					var isBM = row.isBM;
+//
+//					if (wasInGame && !inGameCurrent){
+//						// Previously in game, but no longer in game
+//						users.push({
+//							"summoner_id": summoner_id,
+//							"isBM": isBM
+//						});
+//					}
+//
+//					let query = `UPDATE users SET ingame=? WHERE user_id=?`
+//					db.run(query,[inGameCurrent, user_id], (err) => {
+//						console.log("updating data for user");
+//						if (err) {
+//							return console.error(err.message);
+//						}
+//					});
+//				});
+//			});
+//		});
+//			return users;
+//	}
+//
+function handleLeagueUsers(){
+	var users = [];
 
-			console.log("pulled from connections");
+	let query = `SELECT * FROM connections WHERE type=?`;
 
-			rows.forEach(async function (row){
-				console.log("iterating through table");
-				var summoner_id = row.id;
-				var user_id = row.user_id;
-				var inGameCurrent = await summoner.isUserInGame(summoner_id.split('_')[1]); 
-				let query = `SELECT * FROM users WHERE user_id=?`;
+	db.each(query,['leagueoflegends'], (err, row) => {
+		if(err){
+			throw err;
+		}
 
-				db.get(query,[user_id], (err, row) => {
+		console.log(row);
+		var summoner_id = row.id;
+		var user_id = row.user_id;
+		summoner.isUserInGame(summoner_id.split('_')[1]).then((data) => {
+			inGameCurrent = data;
+			console.log(data);
+
+			let query = `SELECT * FROM users WHERE user_id=?`;
+
+			db.get(query,[user_id], (err,row) => {
+				console.log(row);
+				var wasInGame = row.ingame;
+				var isBM = row.isBM;
+
+				if(wasInGame && !inGameCurrent){
+					var user ={"summoner_id": summoner_id, "isBM": isBM};
+					summoner.gatherInformation(user).then((data) => {
+						console.log(data);
+						if(data){
+							bmUser(user.summoner_id,'leagueoflegends',data);
+						} else {
+							console.log("No data for this user");
+						}
+					});
+				}
+				let query = `UPDATE users SET ingame=? WHERE user_id=?`
+				db.run(query,[inGameCurrent, user_id], (err) => {
+					console.log("updating data for user");
 					if (err) {
 						return console.error(err.message);
 					}
-
-					console.log("Getting data from user");
-					var wasInGame = row.ingame;
-					var isBM = row.isBM;
-
-					if (wasInGame && !inGameCurrent){
-						// Previously in game, but no longer in game
-						users.push({
-							"summoner_id": summoner_id,
-							"isBM": isBM
-						});
-					}
-
-					let query = `UPDATE users SET ingame=? WHERE user_id=?`
-					db.run(query,[inGameCurrent, user_id], (err) => {
-						console.log("updating data for user");
-						if (err) {
-							return console.error(err.message);
-						}
-					});
 				});
 			});
 		});
-			return users;
-	}
-
-async function getLeagueUsers(){
-	console.log("getting league users");
-
-	var users = [];
-
-	//users.push(lmao());
-
-	users.push({"summoner_id": "na_39600728", "isBM": 1});
-
-	console.log(users);
-
-	return users;
+	});
 }
+
+//function getLeagueUsers(callback){
+//	console.log("getting league users");
+//
+//	var users = [];
+//	//Grab discord users' Riot usernames
+//	let query = `SELECT * FROM connections WHERE type=?`;
+//	db.all(query,['leagueoflegends'], (err, rows) => {
+//		if (err) {
+//			return console.error(err.message);
+//		}
+//
+//		console.log("pulled from connections");
+//
+//		rows.forEach(function (row){
+//			console.log("iterating through table");
+//			var summoner_id = row.id;
+//			var user_id = row.user_id;
+//			summoner.isUserInGame(summoner_id.split('_')[1]).then((data) => {
+//				inGameCurrent = data;
+//				
+//				console.log(data);
+//
+//				let query = `SELECT * FROM users WHERE user_id=?`;
+//
+//				db.get(query,[user_id], (err, row) => {
+//					if (err) {
+//						return console.error(err.message);
+//					}
+//
+//					console.log("Getting data from user");
+//					var wasInGame = row.ingame;
+//					var isBM = row.isBM;
+//
+//					if (wasInGame && !inGameCurrent){
+//						// Previously in game, but no longer in game
+//						users.push({
+//							"summoner_id": summoner_id,
+//							"isBM": isBM
+//						});
+//					}
+//
+//					let query = `UPDATE users SET ingame=? WHERE user_id=?`
+//					db.run(query,[inGameCurrent, user_id], (err) => {
+//						console.log("updating data for user");
+//						if (err) {
+//							return console.error(err.message);
+//						}
+//					});
+//				});
+//			});
+//		});
+//	});
+//}
 
 function redirectUser(message){
 	if(message.guild.id == hub_server_id)
@@ -318,24 +405,7 @@ function unregisterUser(message){
 user_bot.login(user_token);
 extern_bot.login(bot_token);
 
-
 // Timed calls
-var timerID = setInterval(async function() {
-	var users = await getLeagueUsers();
-	//console.log(users);
-	var j = 0;
-	for (var i = 0; i < users.length; i++){
-		summoner.gatherInformation(users[i])
-			.then(function(data) {
-				console.log(data);
-				console.log(users);
-				// do something with the data
-				if(data){
-					bmUser(users[j].summoner_id,"leagueoflegends",data);
-				} else {
-					console.log("No data for user" + users[j].user_id);
-				}
-				j++;
-			});
-	}
-}, 5  * 1000);
+var timerID = setInterval(function() {
+	handleLeagueUsers();
+}, 5 *60  * 1000);

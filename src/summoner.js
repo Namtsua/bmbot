@@ -46,7 +46,7 @@ async function getUserGameStatus(summonerId){
 
 async function isUserInGame(summonerId){
 	try{
-        var currentGame  = await getUserGameStatus(ctz.id);
+        var currentGame  = await getUserGameStatus(summonerId);
     }catch(error) {
         console.log("404 - No Current Match Found");
         return false;
