@@ -28,3 +28,25 @@ function getSummonerID(accountName) {
             accountID = summonerInfo.accountId;
         });
 }
+
+function getMatchHistory(accountId) {
+    kayn.Matchlist.by.accountID(accountId)
+        .region(REGIONS.NORTH_AMERICA)
+        .query({
+            season: 9
+        })
+        .callback(function(err, matchHistory) {
+            console.log(matchHistory);
+        })
+}
+
+
+kayn.Matchlist.by.accountID(3440481)
+    .region(REGIONS.NORTH_AMERICA)
+    .query({
+        champion: 67,
+        season: 9,
+    })
+    .callback(function(err, matchlist) {
+        console.log(matchlist.matches)
+    })
