@@ -21,47 +21,52 @@ const kayn = Kayn(client_secret.riot_key)({
 })
 
 
-function getSummonerID(accountName) {
-    kayn.Summoner.by.name(accountName)
-        .callback(function(err, summonerInfo) {
-            console.log(summonerInfo);
-            accountID = summonerInfo.accountId;
-        });
+ async function getSummonerID(accountName) {
+    return kayn.Summoner.by.name(accountName)
 }
 
-function getMatchHistory(accountId) {
-    kayn.Matchlist.by.accountID(accountId)
+async function getMatchHistory(accountId) {
+    return kayn.Matchlist.by.accountID(accountId)
         .region(REGIONS.NORTH_AMERICA)
         .query({
             season: 9
         })
-        .callback(function(err, matchHistory) {
-            console.log(matchHistory);
-        })
 }
 
-function getUserGameStatus(summonerId){
-    kayn.CurrentGame.by.summonerID(summonerId)
-    .callback(function(err, currentGame) {
-        if (currentGame) {
-            console.log("User is in match");
-        } 
-        else {
-            console.log("User is not in match");
-        }
-    })
+async function getMatchStats(matchId) {
+    return kayn.Match.get(matchId);
 }
 
-getUserGameStatus();
-//getSummonerID("Namtsua");
 
-// kayn.Matchlist.by.accountID("202381637")
-//     .region(REGIONS.NORTH_AMERICA)
-//     .query({
-//         season: 9,
+async function getUserGameStatus(summonerId){
+    return kayn.CurrentGame.by.summonerID(summonerId);
+}
 
-//     })
-//     .callback(function(err, matchlist) {
-//         console.log(matchlist.matches)
-//     })
+async function parseGameStats(gameStats, accountId){
     
+    console.log(accountId + " AND " + gameStats)
+    console.log(JSON.stringify(gameStats.participantIdentities));
+    var desiredUser = {};
+    for (var i = 0; i < gameStats.participantIdentities.length; i++){
+        if (gameStats.participantIdentities[i].player.accountId == accountId) {
+            desiredUser.desiredUserId = gameStats.participantIdentities[i].participantId
+            desiredUser.desiredUserIndex = i;
+            break;
+        }
+    }
+    var statsLocation = gameStats.participants[desiredUser.desiredUserIndex].stats
+    desiredUser.win = statsLocation.win;
+    desiredUser.kills = statsLocation.kills;
+    desiredUser.assists = statsLocation.assist;
+    desiredUser.deaths = statsLocation.deaths;
+    desiredUser.wardsKilled = statsLocation.wardsKilled;
+    desiredUser.visionScore = statsLocation.visionScore;
+    desiredUser.goldEarned = statsLocation.goldEarned;
+    desiredUser.goldSpent = statsLocation.goldSpent;
+    desiredUser.largestKillingSpree = statsLocation.largestKillingSpree;
+    desiredUser.largestCriticalStrike = desiredUser.largestCriticalStrike;
+
+    // Special condition for support/carry
+    return desiredUser;
+    
+}
