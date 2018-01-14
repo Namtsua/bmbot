@@ -19,3 +19,12 @@ const kayn = Kayn(client_secret.riot_key)({
         ttls: {},
     },
 })
+
+
+function getSummonerID(accountName) {
+    kayn.Summoner.by.name(accountName)
+        .callback(function(err, summonerInfo) {
+            console.log(summonerInfo);
+            accountID = summonerInfo.accountId;
+        });
+}
