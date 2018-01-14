@@ -17,6 +17,8 @@
   },
   "homepage": "https://github.com/Namtsua/bmbot#readme",
   "dependencies": {
-    "discord.js": "^11.2.1"
+    "discord.js": "^11.2.1",
+    "kayn": "^0.8.1",
+    "riot-api-node": "^0.1.0"
   }
 }
