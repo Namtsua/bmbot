@@ -1,7 +1,9 @@
+//import { gatherInformation } from './summoner';
+
 const Discord = require('discord.js');
-var client_secret = require('../client_secret.json');
-var summoner = require('./summoner.js');
-var config = require('./config');
+const client_secret = require('../client_secret.json');
+const summoner = require('./summoner.js');
+const config = require('./config');
 const sqlite = require('sqlite3').verbose();
 
 let db = new sqlite.Database('../db/users.db', (err) => {
@@ -22,7 +24,6 @@ const user_bot = new Discord.Client();
 // External bot blasts BMs and redirects users to bmbot server
 const extern_bot = new Discord.Client();
 
-var client_secret = require('../client_secret.json');
 
 // the token of your bot - https://discordapp.com/developers/applications/me
 const user_token = client_secret.user_token;
@@ -80,6 +81,12 @@ extern_bot.on('message', message => {
 		console.log("BOT:Handling command");
 		var command = message.content.substr(1);
 		var args = command.split(" ");
+        if (message.content === '$ping') {
+                    summoner.gatherInformation()
+                         .then(function(data) {
+                             message.reply(data[0]);
+                         })
+                 }
 
 		switch(args[0].toLowerCase()){
 			case "register":
@@ -131,6 +138,18 @@ function bmUser(id,type,msg){
 		discordBM(user_id,msg);
 
 	});
+}
+
+function getLeagueUsers(){
+    //Grab discord users' Riot usernames
+    let query = `SELECT id FROM connections WHERE type='leagueoflegends'`;
+    db.get(query, (err, column) => {
+        if (err) {
+            return console.error(err.message);
+        }
+        console.log(column);
+        
+    })
 }
 
 function redirectUser(message){
@@ -191,21 +210,33 @@ function unregisterUser(message){
 user_bot.login(user_token);
 extern_bot.login(bot_token);
 
-extern_bot.on('message', msg => {
-    if (msg.content === 'ping') {
-        summoner.gatherInformation()
-            .then(function(data) {
-                msg.reply(JSON.stringify(data));
-            })
-    }
-    if (message.content === '$help') {
-        message.reply("help message here !!!");
-    }
-  });  
+// extern_bot.on('message', msg => {
+//     if (msg.content === 'ping') {
+//         summoner.gatherInformation()
+//             .then(function(data) {
+//                 msg.reply(JSON.stringify(data));
+//             })
+//     }
+//     if (message.content === '$help') {
+//         message.reply("help message here !!!");
+//     }
+//   });  
 
 //where baddie is a user
 function discordBM(baddieUser){
    baddieUser.sendMessage("Test message");
 }
 
-//summoner.gatherInformation();
+summoner.gatherInformation();
+
+//  // Timed calls
+//  var timerID = setInterval(function() {
+//     var users = getLeagueUsers();
+//     for (var i = 0; i < users.length; i++){
+//         summoner.gatherInformation(users[i])
+//             .then(function(data) {
+//                 // do something with the data
+//                 console.log("test");
+//             })
+//     }
+//  }, 60 * 1000);
