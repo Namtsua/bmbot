@@ -31,7 +31,9 @@
     ],
     "cs_gm" : [
         "You’re CS this game was a bit low. Remember, the one who hits last also laughs last.",
-        "KDA a bit low? Take a break, knock off the A, and stock up on some KD."
+        "KDA a bit low? Take a break, knock off the A, and stock up on some KD.",
+        "Remember the wise ways of Nasus. Farm. Q. Repeat. Reap the stacks and CS.",
+        "Big cannon = big bucks. Make sure to boop those cannon minions!"
 
     ],
     "loss_bm" : [
@@ -48,6 +50,7 @@
     ],
     "loss_gm" : [
         "You didn’t have much vision this game, invest in some wards so you can dodge those ganks!",
-        "You win some, you lose some eh champ? Onto the next!"
+        "You win some, you lose some eh champ? Onto the next!",
+        "You took the L this time. But it’s alright, it means that your next W will be even sweeter!"
     ]
 }
