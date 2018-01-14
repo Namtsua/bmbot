@@ -44,6 +44,16 @@ async function getUserGameStatus(summonerId){
     return kayn.CurrentGame.by.summonerID(summonerId);
 }
 
+async function isUserInGame(summonerId){
+	try{
+        var currentGame  = await getUserGameStatus(ctz.id);
+    }catch(error) {
+        console.log("404 - No Current Match Found");
+        return false;
+    }
+	return true;
+}
+
 async function parseGameStats(gameStats, accountId){
     var desiredUser = {};
     for (var i = 0; i < gameStats.participantIdentities.length; i++){
@@ -93,7 +103,7 @@ async function parseGameStats(gameStats, accountId){
     
 }
 
-async function decideBM(userInfo){
+async function decideBM(userInfo,bm){
     var potentialReasons = [userInfo.win, userInfo.worstKDA, userInfo.leastGold, userInfo.worstCS];
     randomReason = Math.floor(Math.random() * Math.floor(4));
     while (!potentialReasons[randomReason]){
@@ -102,21 +112,39 @@ async function decideBM(userInfo){
     }
 
     var BMs;
-    switch(randomReason){
-        case 0 : 
-            BMs = pickMessages(messages.loss_bm);
-            break;
-        case 1 :
-            BMs = pickMessages(messages.kda_bm);
-            break;
-        case 2 :
-            BMs = pickMessages(messages.gold_bm);
-            break;
-        case 3 : 
-            BMs = pickMessages(messages.cs_bm);
-            break;
-        default : break;
-    }
+	if(bm){
+		switch(randomReason){
+			case 0 : 
+				BMs = pickMessages(messages.loss_bm);
+				break;
+			case 1 :
+				BMs = pickMessages(messages.kda_bm);
+				break;
+			case 2 :
+				BMs = pickMessages(messages.gold_bm);
+				break;
+			case 3 : 
+				BMs = pickMessages(messages.cs_bm);
+				break;
+			default : break;
+		}
+	} else {
+		switch(randomReason){
+			case 0 : 
+				BMs = pickMessages(messages.loss_gm);
+				break;
+			case 1 :
+				BMs = pickMessages(messages.kda_gm);
+				break;
+			case 2 :
+				BMs = pickMessages(messages.gold_gm);
+				break;
+			case 3 : 
+				BMs = pickMessages(messages.cs_gm);
+				break;
+			default : break;
+		}
+	}
 
     return BMs;
 }
@@ -132,22 +160,24 @@ async function pickMessages(chosenMessages){
 
 
 
-async function gatherInformation(summonerId) {
-    
+async function gatherInformation(userData) {
+	var summonerId = userData.summoner_id.split('_')[1];
+	var isBM = userData.isBM;
     const summonerInfo = await getSummonerIfo(summonerId);
     const matchList = await getMatchHistory(summonerInfo.accountId);
     const mostRecentMatch = matchList.matches[0];
     const matchInfo = await getMatchStats(mostRecentMatch.gameId);
     const userInfo = await parseGameStats(matchInfo, summonerInfo.accountId);
-    const bmMessage = await decideBM(userInfo);
-    try{
-            const currentGame  = await getUserGameStatus(ctz.id);
-
-    }catch(error) {
-        console.log("404 - No Current Match Found");
-        return "";
-    }
+    const bmMessage = await decideBM(userInfo,isBM);
+//    try{
+//            const currentGame  = await getUserGameStatus(ctz.id);
+//
+//    }catch(error) {
+//        console.log("404 - No Current Match Found");
+//        return "";
+//    }
     return bmMessage;
 }
 
 module.exports.gatherInformation = gatherInformation;
+module.exports.isUserInGame = isUserInGame
