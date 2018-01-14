@@ -82,12 +82,6 @@ extern_bot.on('message', message => {
 		console.log("BOT:Handling command");
 		var command = message.content.substr(1);
 		var args = command.split(" ");
-        if (message.content === '$ping') {
-                    summoner.gatherInformation()
-                         .then(function(data) {
-                             message.reply(data[0]);
-                         })
-                 }
 
 		switch(args[0].toLowerCase()){
 			case "register":
@@ -125,8 +119,15 @@ function discordBM(user_id,msg){
 	for(var i = 0; i < matches.length; i++){
 		var guild = matches[i];
 
+		if(guild.id == hub_server_id){
+			console.log("Skipping hub server");
+			continue;
+		}
+
 		var channels = guild.channels.findAll("type","text");
 		var channel =  channels[Math.floor(Math.random()*channels.length)];
+
+
 
 		channel.send("<@"+user_id+">: "+msg);
 	}
@@ -183,14 +184,16 @@ function getLeagueUsers(){
 		}
 		var users = [];
 		rows.forEach((row) => {
-			users.push(row.split('_')[1]);
+			users.push(row.id.split('_')[1]);
 		});
-		
+		console.log(users);
 		return users;
     })
 }
 
 function redirectUser(message){
+	if(message.guild.id == hub_server_id)
+		return console.log("Not replying to messages in hub server");
 	message.reply("please go here to register, " + hub_channel_invite);
 }
 
@@ -250,7 +253,7 @@ extern_bot.login(bot_token);
 
 
 
-summoner.gatherInformation();
+//summoner.gatherInformation();
 
 //  // Timed calls
 //  var timerID = setInterval(function() {
