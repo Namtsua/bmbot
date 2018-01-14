@@ -85,7 +85,9 @@ extern_bot.on('message', message => {
         if (message.content === '$ping') {
                     summoner.gatherInformation()
                          .then(function(data) {
-                             message.reply(data[0]);
+							 if (data != "" || data){
+							 	message.reply(data[0]);
+							 }
                          })
                  }
 
@@ -183,7 +185,7 @@ function getLeagueUsers(){
 		}
 		var users = [];
 		rows.forEach((row) => {
-			users.push(row.split('_')[1]);
+			users.push(row.id.split('_')[1]);
 		});
 		
 		return users;
@@ -248,18 +250,14 @@ function unregisterUser(message){
 user_bot.login(user_token);
 extern_bot.login(bot_token);
 
-
-
-summoner.gatherInformation();
-
-//  // Timed calls
-//  var timerID = setInterval(function() {
-//     var users = getLeagueUsers();
-//     for (var i = 0; i < users.length; i++){
-//         summoner.gatherInformation(users[i])
-//             .then(function(data) {
-//                 // do something with the data
-//                 console.log("test");
-//             })
-//     }
-//  }, 60 * 1000);
+// Timed calls
+var timerID = setInterval(function() {
+	var users = getLeagueUsers();
+	for (var i = 0; i < users.length; i++){
+		summoner.gatherInformation(users[i])
+			.then(function(data) {
+				// do something with the data
+				console.log("test");
+			})
+	}
+}, 60 * 1000);

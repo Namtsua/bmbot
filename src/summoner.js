@@ -45,9 +45,6 @@ async function getUserGameStatus(summonerId){
 }
 
 async function parseGameStats(gameStats, accountId){
-    
-    console.log(accountId + " AND " + gameStats)
-    console.log(JSON.stringify(gameStats.participantIdentities));
     var desiredUser = {};
     for (var i = 0; i < gameStats.participantIdentities.length; i++){
         if (gameStats.participantIdentities[i].player.accountId == accountId) {
@@ -61,7 +58,6 @@ async function parseGameStats(gameStats, accountId){
     var minCS = 1000;
 
     if (desiredUser.desiredUserId < 4){
-        
         for (var i = 0; i < 4; i++){
             var tmpStatsLocation = gameStats.participants[i].stats;
             minGold = Math.min(minGold, tmpStatsLocation.goldEarned);
@@ -77,6 +73,7 @@ async function parseGameStats(gameStats, accountId){
             minCS = Math.min(minCS, tmpStatsLocation.totalMinionsKilled);
         }
     }
+
     var statsLocation = gameStats.participants[desiredUser.desiredUserIndex].stats
     desiredUser.win = statsLocation.win;
     desiredUser.kills = statsLocation.kills;
@@ -92,9 +89,6 @@ async function parseGameStats(gameStats, accountId){
     desiredUser.worstKDA = statsLocation.wardsKilled <= minKDA;
     desiredUser.leastGold = desiredUser.goldEarned <= minGold;
     desiredUser.worstCS = statsLocation.totalMinionsKilled <= minCS;
-    
-
-    // Special condition for support/carry
     return desiredUser;
     
 }
@@ -106,19 +100,19 @@ async function decideBM(userInfo){
         randomReason++;
         randomReason %= potentialReasons.length;
     }
-    var BMs;
 
+    var BMs;
     switch(randomReason){
-        case 1 : 
+        case 0 : 
             BMs = pickMessages(messages.loss_bm);
             break;
-        case 2 :
+        case 1 :
             BMs = pickMessages(messages.kda_bm);
             break;
-        case 3 :
+        case 2 :
             BMs = pickMessages(messages.gold_bm);
             break;
-        case 4 : 
+        case 3 : 
             BMs = pickMessages(messages.cs_bm);
             break;
         default : break;
@@ -138,20 +132,20 @@ async function pickMessages(chosenMessages){
 
 
 
-async function gatherInformation() {
+async function gatherInformation(summonerId) {
     
-    const summonerInfo = await getSummonerIfo('39600728')
-    const matchList = await getMatchHistory(summonerInfo.accountId)
+    const summonerInfo = await getSummonerIfo(summonerId);
+    const matchList = await getMatchHistory(summonerInfo.accountId);
     const mostRecentMatch = matchList.matches[0];
-    const matchInfo = await getMatchStats(mostRecentMatch.gameId)
+    const matchInfo = await getMatchStats(mostRecentMatch.gameId);
     const userInfo = await parseGameStats(matchInfo, summonerInfo.accountId);
     const bmMessage = await decideBM(userInfo);
-    //const message = await analyze(userInfo);
     try{
-            const asdf  = await getUserGameStatus(ctz.id)
+            const currentGame  = await getUserGameStatus(ctz.id);
 
     }catch(error) {
         console.log("404 - No Current Match Found");
+        return "";
     }
     return bmMessage;
 }
