@@ -4,6 +4,8 @@
 var client_secret = require('../client_secret.json');
 var summoner = require('./summoner.js');
 const Discord = require('discord.js');
+var config = require('./config');
+
 
 // create an instance of a Discord Client, and call it bot
 const bot = new Discord.Client();
@@ -23,8 +25,17 @@ bot.on('message', msg => {
                 msg.reply(JSON.stringify(data));
             })
     }
-  });
+    if (message.content === '$help') {
+        message.reply("help message here !!!");
+    }
+  });  
 
+//where baddie is a user
+function discordBM(baddieUser){
+   baddieUser.sendMessage("Test message");
+}
+
+  
 // log our bot in
 bot.login(token);
 
