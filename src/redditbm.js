@@ -1,26 +1,21 @@
-var snoowrap = require('snoowrap');
-var config = require('./config');
+const snoowrap = require('snoowrap');
+const client_secret = require('../client_secret.json');
 
-//connect to api
-//message baddie "ur bad lol"
-//end
+const client = new snoowrap({
+	userAgent: client_secret.reddit_userAgent,
+	clientId: client_secret.reddit_clientId,
+	clientSecret: client_secret.reddit_clientSecret,
+	username: client_secret.reddit_username,
+	password: client_secret.reddit_password
+});
 
-//new config ver
-function redditBM(baddie){
-    const r = new snoowrap({
-        userAgent: config.reddit.userAgent,
-        clientId: config.reddit.clientId,
-        clientSecret: config.reddit.clientSecret,
-        username: config.reddit.username,
-        password: config.reddit.password
-      });
-
-    r.composeMessage({
-        to: baddie,
-        subject: "saw u die lmao",
-        text: 'Ur bad at video games kek'
+function redditBM(name, msg){
+    client.composeMessage({
+        to: name,
+        subject: "Re: your latest game",
+        text: msg
     });
 }
 
 
-//redditBM("madi-mon");
+module.exports.redditBM = redditBM;
