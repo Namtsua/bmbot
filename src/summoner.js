@@ -170,13 +170,6 @@ async function gatherInformation(userData) {
     const matchInfo = await getMatchStats(mostRecentMatch.gameId);
     const userInfo = await parseGameStats(matchInfo, summonerInfo.accountId);
     const bmMessage = await decideBM(userInfo,isBM);
-//    try{
-//            const currentGame  = await getUserGameStatus(ctz.id);
-//
-//    }catch(error) {
-//        console.log("404 - No Current Match Found");
-//        return "";
-//    }
     return bmMessage;
 }
 
