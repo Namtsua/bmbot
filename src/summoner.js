@@ -105,7 +105,7 @@ async function parseGameStats(gameStats, accountId){
 
 async function decideBM(userInfo,bm){
     var potentialReasons = [userInfo.win, userInfo.worstKDA, userInfo.leastGold, userInfo.worstCS];
-	if(userInfo.win == userInfo.worstKDA == userInfo.leastGold == userInfo.worstCS == false) return ['Way to go!', 'Good Job!','Keep it up!'];
+    if (potentialReasons[0] == potentialReasons[1] == potentialReasons[2] == potentialReasons[3] == false) return ["Good job!", "Keep it up!", "Way to go champ!"];
     randomReason = Math.floor(Math.random() * Math.floor(4));
     while (!potentialReasons[randomReason]){
         randomReason++;
@@ -170,13 +170,6 @@ async function gatherInformation(userData) {
     const matchInfo = await getMatchStats(mostRecentMatch.gameId);
     const userInfo = await parseGameStats(matchInfo, summonerInfo.accountId);
     const bmMessage = await decideBM(userInfo,isBM);
-//    try{
-//            const currentGame  = await getUserGameStatus(ctz.id);
-//
-//    }catch(error) {
-//        console.log("404 - No Current Match Found");
-//        return "";
-//    }
     return bmMessage;
 }
 
