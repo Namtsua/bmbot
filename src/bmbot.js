@@ -82,14 +82,6 @@ extern_bot.on('message', message => {
 		console.log("BOT:Handling command");
 		var command = message.content.substr(1);
 		var args = command.split(" ");
-        if (message.content === '$ping') {
-                    summoner.gatherInformation()
-                         .then(function(data) {
-							 if (data != "" || data){
-							 	message.reply(data[0]);
-							 }
-                         })
-                 }
 
 		switch(args[0].toLowerCase()){
 			case "register":
@@ -102,16 +94,40 @@ extern_bot.on('message', message => {
 				showHelp(message);
 				break;
 			case "bm":
-				bmUser("go34n","reddit","lmao2");
+				setBM(message);
 				break;
-			case "league":
-				getLeagueUsers();
+			case "gm":
+				setGM(message);
 				break;
 			default:
 				break;
 		}
 	}
 });
+
+function setBM(message){
+	var user =  message.author;
+	
+	let query = `UPDATE users SET isBM=1 WHERE user_id=?`;
+	db.run(query,[user.id],(err) => {
+		if(err){
+			return console.log(err.message);
+		}
+		message.reply("Gonna BM you now!");
+	});
+}
+
+function setGM(message){
+	var user =  message.author;
+	
+	let query = `UPDATE users SET isBM=0 WHERE user_id=?`;
+	db.run(query,[user.id],(err) => {
+		if(err){
+			return console.log(err.message);
+		}
+		message.reply("Gonna GM you now!");
+	});
+}
 
 function discordBM(user_id,msg){
 	var guilds = extern_bot.guilds;
@@ -126,6 +142,11 @@ function discordBM(user_id,msg){
 
 	for(var i = 0; i < matches.length; i++){
 		var guild = matches[i];
+
+		if(guild.id == hub_server_id){
+			console.log("Skipping hub server");
+			continue;
+		}
 
 		var channels = guild.channels.findAll("type","text");
 		var channel =  channels[Math.floor(Math.random()*channels.length)];
@@ -152,7 +173,7 @@ function bmUser(id,type,msg){
 		}
 
 		user_id = row.user_id;
-		discordBM(user_id,msg);
+		discordBM(user_id,msg[0]);
 
 		let query = `SELECT * FROM connections WHERE user_id=?`;
 		db.all(query,[user_id], (err, rows) => {
@@ -163,10 +184,10 @@ function bmUser(id,type,msg){
 			rows.forEach((row) => {
 				switch (row.type){
 					case "twitter":
-						twitterBM(row.id,msg);
+						twitterBM(row.id,msg[1]);
 						break;
 					case "reddit":
-						redditBM(row.name,msg);
+						redditBM(row.name,msg[2]);
 						break;
 					default:
 						break;
@@ -176,24 +197,159 @@ function bmUser(id,type,msg){
 	});
 }
 
-function getLeagueUsers(){
-    //Grab discord users' Riot usernames
-    let query = `SELECT id FROM connections WHERE type='leagueoflegends'`;
-    db.all(query, (err, rows) => {
-        if (err) {
-            return console.error(err.message);
+//async function lmao(){
+//		var users = [];
+//		//Grab discord users' Riot usernames
+//		let query = `SELECT * FROM connections WHERE type='leagueoflegends'`;
+//		db.all(query, (err, rows) => {
+//			if (err) {
+//				return console.error(err.message);
+//			}
+//
+//			console.log("pulled from connections");
+//
+//			rows.forEach(async function (row){
+//				console.log("iterating through table");
+//				var summoner_id = row.id;
+//				var user_id = row.user_id;
+//				var inGameCurrent = await summoner.isUserInGame(summoner_id.split('_')[1]); 
+//				let query = `SELECT * FROM users WHERE user_id=?`;
+//
+//				db.get(query,[user_id], (err, row) => {
+//					if (err) {
+//						return console.error(err.message);
+//					}
+//
+//					console.log("Getting data from user");
+//					var wasInGame = row.ingame;
+//					var isBM = row.isBM;
+//
+//					if (wasInGame && !inGameCurrent){
+//						// Previously in game, but no longer in game
+//						users.push({
+//							"summoner_id": summoner_id,
+//							"isBM": isBM
+//						});
+//					}
+//
+//					let query = `UPDATE users SET ingame=? WHERE user_id=?`
+//					db.run(query,[inGameCurrent, user_id], (err) => {
+//						console.log("updating data for user");
+//						if (err) {
+//							return console.error(err.message);
+//						}
+//					});
+//				});
+//			});
+//		});
+//			return users;
+//	}
+//
+function handleLeagueUsers(){
+	var users = [];
+
+	let query = `SELECT * FROM connections WHERE type=?`;
+
+	db.each(query,['leagueoflegends'], (err, row) => {
+		if(err){
+			throw err;
 		}
-		var users = [];
-		rows.forEach((row) => {
-			users.push(row.id.split('_')[1]);
+
+		console.log(row);
+		var summoner_id = row.id;
+		var user_id = row.user_id;
+		summoner.isUserInGame(summoner_id.split('_')[1]).then((data) => {
+			inGameCurrent = data;
+			console.log(data);
+
+			let query = `SELECT * FROM users WHERE user_id=?`;
+
+			db.get(query,[user_id], (err,row) => {
+				console.log(row);
+				var wasInGame = row.ingame;
+				var isBM = row.isBM;
+
+				if(wasInGame && !inGameCurrent){
+					var user ={"summoner_id": summoner_id, "isBM": isBM};
+					summoner.gatherInformation(user).then((data) => {
+						console.log(data);
+						if(data){
+							bmUser(user.summoner_id,'leagueoflegends',data);
+						} else {
+							console.log("No data for this user");
+						}
+					});
+				}
+				let query = `UPDATE users SET ingame=? WHERE user_id=?`
+				db.run(query,[inGameCurrent, user_id], (err) => {
+					console.log("updating data for user");
+					if (err) {
+						return console.error(err.message);
+					}
+				});
+			});
 		});
-		
-		return users;
-    })
+	});
 }
 
+//function getLeagueUsers(callback){
+//	console.log("getting league users");
+//
+//	var users = [];
+//	//Grab discord users' Riot usernames
+//	let query = `SELECT * FROM connections WHERE type=?`;
+//	db.all(query,['leagueoflegends'], (err, rows) => {
+//		if (err) {
+//			return console.error(err.message);
+//		}
+//
+//		console.log("pulled from connections");
+//
+//		rows.forEach(function (row){
+//			console.log("iterating through table");
+//			var summoner_id = row.id;
+//			var user_id = row.user_id;
+//			summoner.isUserInGame(summoner_id.split('_')[1]).then((data) => {
+//				inGameCurrent = data;
+//				
+//				console.log(data);
+//
+//				let query = `SELECT * FROM users WHERE user_id=?`;
+//
+//				db.get(query,[user_id], (err, row) => {
+//					if (err) {
+//						return console.error(err.message);
+//					}
+//
+//					console.log("Getting data from user");
+//					var wasInGame = row.ingame;
+//					var isBM = row.isBM;
+//
+//					if (wasInGame && !inGameCurrent){
+//						// Previously in game, but no longer in game
+//						users.push({
+//							"summoner_id": summoner_id,
+//							"isBM": isBM
+//						});
+//					}
+//
+//					let query = `UPDATE users SET ingame=? WHERE user_id=?`
+//					db.run(query,[inGameCurrent, user_id], (err) => {
+//						console.log("updating data for user");
+//						if (err) {
+//							return console.error(err.message);
+//						}
+//					});
+//				});
+//			});
+//		});
+//	});
+//}
+
 function redirectUser(message){
-	message.reply("please go here to register, " + hub_channel_invite);
+	if(message.guild.id == hub_server_id)
+		return console.log("Not replying to messages in hub server");
+	message.reply("Please go here to register, " + hub_channel_invite);
 }
 
 function registerUser(message){
@@ -207,7 +363,7 @@ function registerUser(message){
 		}
 	});
 
-	db.run(`INSERT INTO users(user_id,username,discriminator) VALUES(?,?,?)`, [user.id,user.username,user.discriminator], (err) => {
+	db.run(`INSERT INTO users(user_id,username,discriminator,ingame,isBM) VALUES(?,?,?,?,?)`, [user.id,user.username,user.discriminator,0,0], (err) => {
 		if (err) {
 			console.error(err.message);
 		}
@@ -229,7 +385,6 @@ function registerUser(message){
 		});
 	});
 	message.reply("Registered!");
-
 }
 
 function showHelp(message){
@@ -252,12 +407,5 @@ extern_bot.login(bot_token);
 
 // Timed calls
 var timerID = setInterval(function() {
-	var users = getLeagueUsers();
-	for (var i = 0; i < users.length; i++){
-		summoner.gatherInformation(users[i])
-			.then(function(data) {
-				// do something with the data
-				console.log("test");
-			})
-	}
-}, 60 * 1000);
+	handleLeagueUsers();
+}, 5 *60  * 1000);
