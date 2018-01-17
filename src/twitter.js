@@ -14,11 +14,6 @@ const client = new Twitter({
     access_token_secret: access_token_secret
 });
 
-//var stream = client.stream('user');
-
-//stream.on('follow', follow_back);
-//stream.on('unfollow', unfollow);
-
 function tweetUserById(id, the_tweet){
 	client.get('users/lookup', {user_id: id}, function(error, users, response){
 		if(error){
